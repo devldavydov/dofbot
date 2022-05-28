@@ -1,0 +1,2 @@
+class DofCalculatorInvalidQuery(Exception):
+    pass
