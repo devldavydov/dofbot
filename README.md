@@ -17,3 +17,10 @@ pip install .
 dofbot telegram_api_token
 dofbot -h
 ```
+
+## run in Docker
+```
+cd dofbot
+./docker_build.sh
+docker run -d --restart always dofbot
+```
