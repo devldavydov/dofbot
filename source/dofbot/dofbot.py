@@ -45,7 +45,7 @@ class DofBot:
         try:
             dof_calc = DofCalculator.from_query(message.text)
         except DofCalculatorInvalidQuery:
-            self._bot.send_message(message.chat.id, '<b>Wrong query!</b>')
+            self._bot.send_message(message.chat.id, '<b>Wrong query!</b>', parse_mode='html')
             return
 
         bldr = HtmlBuilder()
