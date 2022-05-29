@@ -24,3 +24,10 @@ cd dofbot
 ./docker_build.sh
 ./docker_run.sh <telegram_api_token>
 ```
+
+## run tests
+```
+pip install pytest
+cd dofbot
+pytest tests/
+```
