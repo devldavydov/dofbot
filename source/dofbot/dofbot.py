@@ -28,7 +28,7 @@ class DofBot:
 
     def _process_start(self, message: telebot.types.Message) -> None:
         msg = 'Hello, my friend!\n'
-        msg += 'This is Depth Of Field calculation Bot!\n\n'
+        msg += 'This is Depth Of Field calculation Bot for FF camera!\n\n'
         msg += 'Use query language to calculate DoF in formats:\n'
         msg += '<b>FL=&lt;focal length in mm&gt;</b>\n'
         msg += 'Returns DoF table for this focal length with predefined list of apertures and focus distances\n\n'
