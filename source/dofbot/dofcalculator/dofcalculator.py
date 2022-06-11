@@ -38,13 +38,23 @@ class DofCalculator:
         }[op_code]()
 
     def _calc_by_focal_length(self) -> List[DofResult]:
-        raise NotImplementedError()
+        return [
+            self._calc_dof(self._focal_length, f, fd)
+            for f in DofConstants.APERTURE_LIST
+            for fd in DofConstants.FOCUS_DISTANCE_LIST
+        ]
 
     def _calc_by_focal_length_and_focus_distance(self) -> List[DofResult]:
-        raise NotImplementedError()
+        return [
+            self._calc_dof(self._focal_length, f, self._focus_distance)
+            for f in DofConstants.APERTURE_LIST
+        ]
 
     def _calc_by_focal_length_and_aperture(self) -> List[DofResult]:
-        raise NotImplementedError()
+        return [
+            self._calc_dof(self._focal_length, self._aperture, fd)
+            for fd in DofConstants.FOCUS_DISTANCE_LIST
+        ]
 
     def _calc_by_all(self) -> List[DofResult]:
         return [self._calc_dof(self._focal_length, self._aperture, self._focus_distance)]

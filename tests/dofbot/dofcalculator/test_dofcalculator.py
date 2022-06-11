@@ -3,7 +3,59 @@ from math import inf
 import pytest
 
 from dofbot.dofcalculator.dofcalculator import DofCalculator
+from dofbot.dofcalculator.dofconstants import DofConstants
 from dofbot.dofcalculator.dofresult import DofResult
+
+
+def test_calc_by_focal_length():
+    result = DofCalculator(24, None, None).calc()
+    assert len(DofConstants.APERTURE_LIST) * len(DofConstants.FOCUS_DISTANCE_LIST) == len(result)
+    assert DofResult(focal_length=24,
+                     aperture=1.2,
+                     focus_distance=0.5,
+                     dof_near=0.49,
+                     dof_far=0.52,
+                     dof_depth=0.03) == result[0]
+    assert DofResult(focal_length=24,
+                     aperture=22,
+                     focus_distance=30,
+                     dof_near=0.85,
+                     dof_far=inf,
+                     dof_depth=inf) == result[-1]
+
+
+def test_calc_by_focal_length_and_focus_distance():
+    result = DofCalculator(24, None, 5).calc()
+    assert len(DofConstants.APERTURE_LIST) == len(result)
+    assert DofResult(focal_length=24,
+                     aperture=1.2,
+                     focus_distance=5,
+                     dof_near=3.81,
+                     dof_far=7.26,
+                     dof_depth=3.45) == result[0]
+    assert DofResult(focal_length=24,
+                     aperture=22,
+                     focus_distance=5,
+                     dof_near=0.75,
+                     dof_far=inf,
+                     dof_depth=inf) == result[-1]
+
+
+def test_calc_by_focal_length_and_aperture():
+    result = DofCalculator(24, 2.8, None).calc()
+    assert len(DofConstants.FOCUS_DISTANCE_LIST) == len(result)
+    assert DofResult(focal_length=24,
+                     aperture=2.8,
+                     focus_distance=0.5,
+                     dof_near=0.47,
+                     dof_far=0.54,
+                     dof_depth=0.07) == result[0]
+    assert DofResult(focal_length=24,
+                     aperture=2.8,
+                     focus_distance=30,
+                     dof_near=5.59,
+                     dof_far=inf,
+                     dof_depth=inf) == result[-1]
 
 
 @pytest.mark.parametrize(
