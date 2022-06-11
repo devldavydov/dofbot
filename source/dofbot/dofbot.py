@@ -1,20 +1,23 @@
+import logging
 import tempfile
 from pathlib import Path
 
 import telebot
 
-from dofbot.dofcalculator.dofcalculator import DofCalculator
 from dofbot.dofcalculator.exceptions import DofCalculatorInvalidQuery
-from dofbot.htmlbuilder.htmlbuilder import HtmlBuilder
-from dofbot.htmlbuilder.elements import Header
+from dofbot.dofqueryprocessor import DofQueryProcessor
+
+logging.basicConfig(format='%(asctime)s [%(levelname)s] [%(name)s] %(message)s', encoding='utf-8', level=logging.INFO)
 
 
 class DofBot:
     def __init__(self, token: str):
         self._bot = telebot.TeleBot(token, parse_mode=None)
         self._register_handlers()
+        self._logger = logging.getLogger(__name__)
 
     def start(self):
+        self._logger.info('Bot started')
         self._bot.infinity_polling()
 
     def _register_handlers(self) -> None:
@@ -27,6 +30,7 @@ class DofBot:
             self._process_query(message)
 
     def _process_start(self, message: telebot.types.Message) -> None:
+        self._logger.info(f'Received [start] command from {self._get_user_log_info(message)}')
         msg = 'Hello, my friend!\n'
         msg += 'This is Depth Of Field calculation Bot for FF camera!\n\n'
         msg += 'Use query language to calculate DoF in formats:\n'
@@ -42,21 +46,29 @@ class DofBot:
         self._bot.send_message(message.chat.id, msg, parse_mode='html')
 
     def _process_query(self, message: telebot.types.Message) -> None:
+        query = message.text
+        user_log_info = self._get_user_log_info(message)
+
+        self._logger.info(f'Received query [{query}] from {user_log_info}')
         try:
-            dof_calc = DofCalculator.from_query(message.text)
+            dof_calc_result = DofQueryProcessor(query).process()
         except DofCalculatorInvalidQuery:
             self._bot.send_message(message.chat.id, '<b>Wrong query!</b>', parse_mode='html')
+            self._logger.error(f'Wrong query from {user_log_info}')
             return
-
-        bldr = HtmlBuilder()
-        bldr.add_element(Header('Depth Of Field Calculation', 1))
-        bldr.add_element(Header(f'Focal length = {dof_calc.focal_length}'))
-        bldr.add_element(Header(f'Aperture = {dof_calc.aperture}'))
-        bldr.add_element(Header(f'Focus distance = {dof_calc.focus_distance}'))
+        except Exception:
+            self._bot.send_message(message.chat.id, '<b>Internal error!</b>', parse_mode='html')
+            self._logger.exception(f'Exception when processing query from {user_log_info}')
+            return
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             result_file = Path(tmp_dir) / 'calculation.html'
             with result_file.open('w+') as f:
-                f.write(bldr.build())
+                f.write(dof_calc_result)
                 f.seek(0)
                 self._bot.send_document(message.chat.id, f)
+                self._logger.info(f'Send result on query from {user_log_info}')
+
+    @staticmethod
+    def _get_user_log_info(message: telebot.types.Message) -> str:
+        return f'[User(id={message.from_user.id}, username={message.from_user.username}), Chat(id={message.chat.id})]'
