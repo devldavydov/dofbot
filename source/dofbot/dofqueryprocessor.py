@@ -8,6 +8,6 @@ class DofQueryProcessor:
 
     def process(self) -> str:
         dof_calc = DofCalculator.from_query(self._query)
-        dof_formatter = DofResultFormatter(dof_calc.focal_length, dof_calc.aperture, dof_calc.focus_distance,
+        dof_formatter = DofResultFormatter(dof_calc.focal_length, dof_calc.fnumber, dof_calc.focus_distance,
                                            dof_calc.calc())
         return dof_formatter.format()

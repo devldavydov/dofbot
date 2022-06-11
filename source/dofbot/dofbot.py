@@ -35,13 +35,13 @@ class DofBot:
         msg += 'This is Depth Of Field calculation Bot for FF camera!\n\n'
         msg += 'Use query language to calculate DoF in formats:\n'
         msg += '<b>FL=&lt;focal length in mm&gt;</b>\n'
-        msg += 'Returns DoF table for this focal length with predefined list of apertures and focus distances\n\n'
-        msg += '<b>FL=&lt;focal length [mm]&gt,F=&lt;aperture number&gt;</b>\n'
-        msg += 'Returns DoF table row for this focal length and aperture\n\n'
+        msg += 'Returns DoF table for this focal length with predefined list of f-numbers and focus distances\n\n'
+        msg += '<b>FL=&lt;focal length [mm]&gt,FN=&lt;aperture f-number&gt;</b>\n'
+        msg += 'Returns DoF table row for this focal length and f-number\n\n'
         msg += '<b>FL=&lt;focal length [mm]&gt,FD=&lt;focus distance [m]&gt;</b>\n'
         msg += 'Returns DoF table column for this focal length and focus distance\n\n'
-        msg += '<b>FL=&lt;focal length [mm]&gt,F=&lt;aperture number&gt,FD=&lt;focus distance [m]&gt;</b>\n'
-        msg += 'Returns DoF table cell value for this focal length, aperture and focus distance\n\n'
+        msg += '<b>FL=&lt;focal length [mm]&gt,FN=&lt;aperture f-number&gt,FD=&lt;focus distance [m]&gt;</b>\n'
+        msg += 'Returns DoF table cell value for this focal length, f-number and focus distance\n\n'
         msg += 'Send query via message and get html result with DoF calculation'
         self._bot.send_message(message.chat.id, msg, parse_mode='html')
 
