@@ -35,11 +35,7 @@ class DofResultFormatter:
 
     def _format_by_focal_length(self, bldr: HtmlBuilder) -> None:
         table = Table()
-
-        header = Tr()
-        header.add_element(Th("F-number", rowspan=2))
-        header.add_element(Th('Focus distance, m', colspan=len(DofConstants.FOCUS_DISTANCE_LIST)))
-        table.add_thead_element(header)
+        self._add_common_header(table, len(DofConstants.FOCUS_DISTANCE_LIST))
 
         focus_distance_vals = Tr()
         for fd in DofConstants.FOCUS_DISTANCE_LIST:
@@ -60,16 +56,58 @@ class DofResultFormatter:
         bldr.add_element(table)
 
     def _format_by_focal_length_and_focus_distance(self, bldr: HtmlBuilder) -> None:
-        # TODO
-        for i in self._dof_result:
-            bldr.add_element(Paragraph(str(i)))
+        table = Table()
+        self._add_common_header(table)
+        table.add_thead_element(Tr([Th(str(self._focus_distance))]))
+
+        for i, fn in enumerate(DofConstants.FNUMBER_LIST):
+            row = Tr()
+            row.add_element(Th(str(fn)))
+
+            v = self._dof_result[i]
+            row.add_element(Td(f'[{v.dof_near},{v.dof_far},{v.dof_depth}]'))
+
+            table.add_tbody_element(row)
+
+        bldr.add_element(table)
 
     def _format_by_focal_length_and_fnumber(self, bldr: HtmlBuilder) -> None:
-        # TODO
-        for i in self._dof_result:
-            bldr.add_element(Paragraph(str(i)))
+        table = Table()
+        self._add_common_header(table, len(DofConstants.FOCUS_DISTANCE_LIST))
+
+        focus_distance_vals = Tr()
+        for fd in DofConstants.FOCUS_DISTANCE_LIST:
+            focus_distance_vals.add_element(Th(str(fd)))
+        table.add_thead_element(focus_distance_vals)
+
+        row = Tr()
+        row.add_element(Th(str(self._fnumber)))
+
+        for v in self._dof_result:
+            row.add_element(Td(f'[{v.dof_near},{v.dof_far},{v.dof_depth}]'))
+
+        table.add_tbody_element(row)
+
+        bldr.add_element(table)
 
     def _format_by_all(self, bldr: HtmlBuilder) -> None:
-        # TODO
-        for i in self._dof_result:
-            bldr.add_element(Paragraph(str(i)))
+        table = Table()
+        self._add_common_header(table)
+        table.add_thead_element(Tr([Th(str(self._focus_distance))]))
+
+        row = Tr()
+        row.add_element(Th(str(self._fnumber)))
+
+        v = self._dof_result[0]
+        row.add_element(Td(f'[{v.dof_near},{v.dof_far},{v.dof_depth}]'))
+
+        table.add_tbody_element(row)
+
+        bldr.add_element(table)
+
+    @staticmethod
+    def _add_common_header(table: Table, focus_distance_colspan: int = 0) -> None:
+        header = Tr()
+        header.add_element(Th("F-number", rowspan=2))
+        header.add_element(Th('Focus distance, m', colspan=focus_distance_colspan))
+        table.add_thead_element(header)
