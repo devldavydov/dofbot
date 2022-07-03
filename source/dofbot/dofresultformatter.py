@@ -2,17 +2,19 @@ from typing import List, Union
 
 from dofbot.dofcalculator.dofconstants import DofConstants
 from dofbot.dofcalculator.dofresult import DofResult
+from dofbot.dofcalculator.hyperfocalresult import HyperFocalResult
 from dofbot.htmlbuilder.htmlbuilder import HtmlBuilder
-from dofbot.htmlbuilder.elements import Header, Hr, Paragraph, Table, Td, Th, Tr
+from dofbot.htmlbuilder.elements import Header, Hr, Table, Td, Th, Tr
 
 
 class DofResultFormatter:
     def __init__(self, focal_length: int, fnumber: Union[float, None], focus_distance: Union[float, None],
-                 dof_result: List[DofResult]):
+                 dof_result: List[DofResult], hyperfocal_result: Union[HyperFocalResult, None]):
         self._focal_length = focal_length
         self._fnumber = fnumber
         self._focus_distance = focus_distance
         self._dof_result = dof_result
+        self._hyper_focal_result = hyperfocal_result
 
     def format(self) -> str:
         bldr = HtmlBuilder()
@@ -20,6 +22,8 @@ class DofResultFormatter:
         bldr.add_element(Header(f'Focal length = {self._focal_length}'))
         bldr.add_element(Header(f'F-number = {self._fnumber}'))
         bldr.add_element(Header(f'Focus distance = {self._focus_distance}'))
+        if self._hyper_focal_result:
+            bldr.add_element(Header(f'Hyper focal distance = {self._hyper_focal_result.hyperfocal}'))
         bldr.add_element(Hr())
         bldr.add_element(Header('Results', 1))
 

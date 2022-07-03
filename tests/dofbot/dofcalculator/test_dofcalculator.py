@@ -5,6 +5,7 @@ import pytest
 from dofbot.dofcalculator.dofcalculator import DofCalculator
 from dofbot.dofcalculator.dofconstants import DofConstants
 from dofbot.dofcalculator.dofresult import DofResult
+from dofbot.dofcalculator.hyperfocalresult import HyperFocalResult
 
 
 def test_calc_by_focal_length():
@@ -87,3 +88,18 @@ def test_calc_by_all(focal_length, fnumber, focus_distance, dof_near, dof_far, d
                       dof_near=dof_near,
                       dof_far=dof_far,
                       dof_depth=dof_depth)] == DofCalculator(focal_length, fnumber, focus_distance).calc()
+
+
+@pytest.mark.parametrize(
+    'focal_length,fnumber,hyperfocal',
+    (
+        (24, 11, 1.77),
+        (24, 2.8, 6.88),
+        (50, 5.6, 14.93),
+        (135, 16, 38.1)
+    )
+)
+def test_calc_hyperfocal(focal_length, fnumber, hyperfocal):
+    assert HyperFocalResult(focal_length=focal_length,
+                            fnumber=fnumber,
+                            hyperfocal=hyperfocal) == DofCalculator(focal_length, fnumber, None).calc_hyperfocal()

@@ -4,6 +4,7 @@ from typing import List
 from dofbot.dofcalculator.dofconstants import DofConstants
 from dofbot.dofcalculator.dofqueryparser import DofQueryParser
 from dofbot.dofcalculator.dofresult import DofResult
+from dofbot.dofcalculator.hyperfocalresult import HyperFocalResult
 
 
 class DofCalculator:
@@ -36,6 +37,9 @@ class DofCalculator:
             '10': self._calc_by_focal_length_and_fnumber,
             '11': self._calc_by_all
         }[op_code]()
+
+    def calc_hyperfocal(self) -> HyperFocalResult:
+        return self._calc_hyperfocal(self.focal_length, self._fnumber)
 
     def _calc_by_focal_length(self) -> List[DofResult]:
         return [
@@ -77,3 +81,13 @@ class DofCalculator:
 
         return DofResult(focal_length=focal_length, fnumber=fnumber, focus_distance=focus_distance,
                          dof_near=r1, dof_far=r2, dof_depth=inf if r2 == inf else round(r2 - r1, 2))
+
+    @staticmethod
+    def _calc_hyperfocal(focal_length: int, fnumber: float) -> HyperFocalResult:
+        f = focal_length * 0.001
+        f2 = f ** 2
+        k = fnumber
+        z = DofConstants.CIRCLE_OF_CONFUSION * 0.001
+
+        h = f2 / (k * z) + f
+        return HyperFocalResult(focal_length=focal_length, fnumber=fnumber, hyperfocal=round(h, 2))

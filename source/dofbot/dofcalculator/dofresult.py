@@ -11,5 +11,5 @@ class DofResult:
     dof_depth: float
 
     def __str__(self) -> str:
-        return f'FL={self.focal_length} FN={self.fnumber} FD={self.focus_distance} '\
+        return f'DoF(FL={self.focal_length} FN={self.fnumber} FD={self.focus_distance}) '\
                f'[{self.dof_near}, {self.dof_far}, {self.dof_depth}]'
