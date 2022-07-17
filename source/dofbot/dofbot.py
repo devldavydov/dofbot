@@ -23,16 +23,22 @@ class DofBot:
     def _register_handlers(self) -> None:
         @self._bot.message_handler(commands=['start'])
         def _start_handler(message: telebot.types.Message) -> None:
-            self._process_start(message)
+            self._process_start_help(message, True)
+
+        @self._bot.message_handler(commands=['help'])
+        def _help_handler(message: telebot.types.Message) -> None:
+            self._process_start_help(message)
 
         @self._bot.message_handler()
         def _process_query(message: telebot.types.Message) -> None:
             self._process_query(message)
 
-    def _process_start(self, message: telebot.types.Message) -> None:
-        self._logger.info(f'Received [start] command from {self._get_user_log_info(message)}')
-        msg = 'Hello, my friend!\n'
-        msg += 'This is Depth Of Field calculation Bot for FF camera!\n\n'
+    def _process_start_help(self, message: telebot.types.Message, is_start: bool = False) -> None:
+        self._logger.info(f'Received [start,help] command from {self._get_user_log_info(message)}')
+        msg = ''
+        if is_start:
+            msg += 'Hello, my friend!\n'
+            msg += 'This is Depth Of Field calculation Bot for FF camera!\n\n'
         msg += 'Use query language to calculate DoF in formats:\n'
         msg += '<b>FL=&lt;focal length in mm&gt;</b>\n'
         msg += 'Returns DoF table for this focal length with predefined list of f-numbers and focus distances\n\n'
@@ -42,8 +48,27 @@ class DofBot:
         msg += 'Returns DoF table column for this focal length and focus distance\n\n'
         msg += '<b>FL=&lt;focal length [mm]&gt,FN=&lt;aperture f-number&gt,FD=&lt;focus distance [m]&gt;</b>\n'
         msg += 'Returns DoF table cell value for this focal length, f-number and focus distance\n\n'
-        msg += 'Send query via message and get html result with DoF calculation'
-        self._bot.send_message(message.chat.id, msg, parse_mode='html')
+        msg += 'Send query via message and get html result with DoF calculation\n\n'
+        msg += 'Or use quick keyboard for common Focal Lengths'
+
+        markup = telebot.types.ReplyKeyboardMarkup()
+        markup.row(
+            telebot.types.KeyboardButton('FL=17'),
+            telebot.types.KeyboardButton('FL=20'),
+            telebot.types.KeyboardButton('FL=24'),
+        )
+        markup.row(
+            telebot.types.KeyboardButton('FL=28'),
+            telebot.types.KeyboardButton('FL=35'),
+            telebot.types.KeyboardButton('FL=40'),
+        )
+        markup.row(
+            telebot.types.KeyboardButton('FL=50'),
+            telebot.types.KeyboardButton('FL=70'),
+            telebot.types.KeyboardButton('FL=135'),
+        )
+
+        self._bot.send_message(message.chat.id, msg, parse_mode='html', reply_markup=markup)
 
     def _process_query(self, message: telebot.types.Message) -> None:
         query = message.text
